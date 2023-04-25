@@ -8,7 +8,7 @@ import CourseDetailsBox from '../../Components/CourseDetailsBox/CourseDetailsBox
 import Sidebar from '../../Components/Sidebar/Sidebar'
 import CommentSection from '../../Components/CommentSection/CommentSection'
 import "./CoursesInfo.css"
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { AuthContext } from '../../Contexts/AuthContext'
 import { FcLock } from "react-icons/fc"
 
@@ -172,24 +172,45 @@ export default function CoursesInfo() {
                       {
                         sessionsInfo.map((session, index) => (
                           <>
-                            <Accordion.Body className='introduction__accordion-body'>
-                              <div className="introduction__accordion-right">
-                                <span className="introduction__accordion-count">{index + 1}</span>
-                                <i className="fab fa-youtube introduction__accordion-icon"></i>
-                                <a href="#" className="introduction__accordion-link">
-                                  {session.title}
-                                </a>
-                              </div>
-                              <div className="introduction__accordion-left">
-                                <span className="introduction__accordion-time">
-                                  {
-                                    isStudent ? session.time : (
+                            {
+                              session.free === 1 || isStudent ? (
+                                <>
+                                  <Accordion.Body className='introduction__accordion-body'>
+                                    <div className="introduction__accordion-right">
+                                      <span className="introduction__accordion-count">{index + 1}</span>
+                                      <i className="fab fa-youtube introduction__accordion-icon"></i>
+                                      <Link to="/" className="introduction__accordion-link">
+                                        {session.title}
+                                      </Link>
+                                    </div>
+                                    <div className="introduction__accordion-left">
+                                      <span className="introduction__accordion-time">
+                                        {session.time}
+                                      </span>
+                                    </div>
+                                  </Accordion.Body>
+                                </>
+                              ) : (
+                                <>
+                                  <Accordion.Body className='introduction__accordion-body'>
+                                    <div className="introduction__accordion-right">
+                                      <span className="introduction__accordion-count">{index + 1}</span>
+                                      <i className="fab fa-youtube introduction__accordion-icon"></i>
+                                      <span href="#" className="introduction__accordion-link">
+                                        {session.title}
+                                      </span>
+                                    </div>
+                                    <div className="introduction__accordion-left">
+                                      <span className="introduction__accordion-time">
+                                        {session.time}
+
+                                      </span>
                                       <FcLock />
-                                    )
-                                  }
-                                </span>
-                              </div>
-                            </Accordion.Body>
+                                    </div>
+                                  </Accordion.Body>
+                                </>
+                              )
+                            }
                           </>
                         ))
                       }

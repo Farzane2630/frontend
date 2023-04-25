@@ -7,7 +7,7 @@ export default function LandingCounter({ count }) {
 
     let interval = setInterval(() => {
       setCounter(prev => prev + 1)
-    }, 10);
+    }, 100);
 
     if (counter === count) {
       return clearInterval(interval)

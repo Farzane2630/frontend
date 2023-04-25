@@ -3,6 +3,7 @@ import TableContent from "../../../Components/AdminPanel/TableContent/TableConte
 import Input from '../../../Components/Form/Input'
 import { minValidator } from "../../../Components/Validators/rules"
 import { useForm } from '../../../hooks/useForm'
+import swal from 'sweetalert'
 
 export default function Sessions() {
    const [formState, onInputHandler] = useForm({
@@ -10,7 +11,7 @@ export default function Sessions() {
          value: "",
          isValid: false,
       },
-      description: {
+      time: {
          value: "",
          isValid: false,
       },
@@ -22,9 +23,10 @@ export default function Sessions() {
       false
    )
    const [sessions, setSessions] = useState([])
-   const [courses,setCourses] = useState([])
-  const [courseID, setCourseID] = useState("-1")
-  const [sessionVideo, setSessionVideo] = useState("")
+   const [courses, setCourses] = useState([])
+   const [courseID, setCourseID] = useState("-1")
+   const [sessionVideo, setSessionVideo] = useState("")
+   const [isFree, setIsFree] = useState(0)
 
 
    function getAllSessions() {
@@ -32,33 +34,98 @@ export default function Sessions() {
          .then(res => res.json())
          .then(allSessions => {
             setSessions(allSessions)
+            console.log(allSessions);
          })
    }
 
    const addSessions = (e) => {
       e.preventDefault()
+
+      const localStorageData = JSON.parse(localStorage.getItem("user"));
+
+      let formData = new FormData()
+      formData.append("title", formState.inputs.title.value)
+      formData.append("time", formState.inputs.time.value)
+      //  formData.append("free", formState.inputs.free.value)
+      formData.append("courseID", courseID)
+      formData.append("video", sessionVideo)
+      formData.append("free", isFree)
+
+      if (courseID === "-1") {
+         swal({
+            title: "لطفا دوره ی مورد نظر را انتخاب کنید",
+            buttons: "OK",
+            icon: "warning"
+         })
+      } else {
+         fetch(`http://127.0.0.1:8000/v1/courses/${courseID}/sessions`, {
+            method: "POST",
+            headers: {
+               Authorization: `Bearer ${localStorageData.token}`
+            },
+            body: formData
+         }).then(res => {
+            console.log(res)
+
+            if (res.ok) {
+               swal({
+                  title: ".جلسه ی جدید با موفقیت ثبت شد",
+                  icon: "success",
+                  buttons: "Done"
+               }).then(() => {
+                  getAllSessions()
+               })
+            }
+         })
+      }
    }
 
    const optionValueHandler = e => {
       setCourseID(e.target.value)
-    }
+   }
+
+   const deletesession = (sessionID) => {
+      const localStorageData = JSON.parse(localStorage.getItem("user"));
+      swal({
+         title: "آیا از حذف این جلسه اطمینان دارید؟",
+         icon: "warning",
+         buttons: ["خیر", "بله"]
+      }).then(() => {
+         fetch(`http://127.0.0.1:8000/v1/courses/sessions/${sessionID}`, {
+            method: "DELETE",
+            headers: {
+               Authorization: `Bearer ${localStorageData.token}`,
+            },
+         })
+            .then((res) => res.json())
+            .then((result => {
+               swal({
+                  title: "جلسه با موفقیت حذف شد",
+                  icon: "success",
+                  buttons: "ok"
+               }).then(() => getAllSessions())
+
+            }))
+      })
+   }
 
    useEffect(() => {
 
       const localStorageData = JSON.parse(localStorage.getItem("user"));
       fetch("http://127.0.0.1:8000/v1/courses", {
-        headers: {
-          Authorization: `Bearer ${localStorageData.token}`,
-        },
+         headers: {
+            Authorization: `Bearer ${localStorageData.token}`,
+         },
       })
-        .then((res) => res.json())
-        .then((allCourses) => {
-          console.log(allCourses);
-          setCourses(allCourses);
-        });
+         .then((res) => res.json())
+         .then((allCourses) => {
+            setCourses(allCourses);
+         });
 
       getAllSessions()
    }, [])
+
+
    return (
       <>
          <div class="container-fluid" id="home-content">
@@ -82,6 +149,20 @@ export default function Sessions() {
                      </div>
                   </div>
                   <div class="col-6">
+                     <div class="name input">
+                        <label class="input-title">مدت زمان جلسه</label>
+                        <Input
+                           id="time"
+                           element="input"
+                           onInputHandler={onInputHandler}
+                           validations={[minValidator(5)]}
+                           type="text"
+                           placeholder="لطفا مدت زمان جلسه را وارد کنید..."
+                        />
+                        <span class="error-message text-danger"></span>
+                     </div>
+                  </div>
+                  <div class="col-6">
                      <div class="number input">
                         <label class="input-title">دوره مربوط به این جلسه</label>
                         <select
@@ -90,7 +171,7 @@ export default function Sessions() {
                            <option value="-1">انتخاب دوره مربوط به این جلسه</option>
                            {
                               courses.map(course => (
-                                 <option value={course._id} key={course._id}>{course.title} </option>
+                                 <option value={course._id} key={course._id}>{course.name} </option>
                               ))
                            }
                         </select>
@@ -106,6 +187,38 @@ export default function Sessions() {
                            id="file"
                            onChange={e => setSessionVideo(e.target.files[0])}
                         />
+                     </div>
+                  </div>
+                  <div class="col-6">
+                     <div class="bottom-form">
+                        <div class="condition">
+                           <label class="input-title">وضعیت دوره</label>
+                           <div class="radios">
+                              <div class="available">
+                                 <label>
+                                    <span>رایگان</span>
+                                    <input
+                                       type="radio"
+                                       value="1"
+                                       name="condition"
+                                       checked
+                                       onClick={(e) => setIsFree(1)}
+                                    />
+                                 </label>
+                              </div>
+                              <div class="unavailable">
+                                 <label>
+                                    <span> غیر رایگان</span>
+                                    <input
+                                       type="radio"
+                                       value="0"
+                                       name="condition"
+                                       onClick={(e) => setIsFree(0)}
+                                    />
+                                 </label>
+                              </div>
+                           </div>
+                        </div>
                      </div>
                   </div>
                   <div class="col-12">
@@ -135,7 +248,7 @@ export default function Sessions() {
                </thead>
                <tbody>
                   {
-                     sessions.slice(0,5).map((session, index) => (
+                     sessions.map((session, index) => (
                         <tr key={session._id}>
                            <td>{index + 1}</td>
                            <td>{session.title}</td>
@@ -145,7 +258,7 @@ export default function Sessions() {
                               <button
                                  type="button"
                                  className="btn btn-danger delete-btn"
-                              // onClick={() => deletesession(session._id)}
+                                 onClick={() => deletesession(session._id)}
                               >
                                  حذف
                               </button>
