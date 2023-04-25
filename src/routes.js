@@ -18,6 +18,7 @@ import AdminMenu from "./Pages/AdminPanel/AdminMenu/AdminMenu";
 import AdminCategory from "./Pages/AdminPanel/AdminCategory/AdminCategory";
 import AdminContact from "./Pages/AdminPanel/AdminContact/AdminContact";
 import Sessions from "./Pages/AdminPanel/Sessions/Sessions";
+import SessionDetails from "./Pages/SessionDetails/SessionDetails";
 
 const routes = [
   { path: "/", element: <Index /> },
@@ -31,6 +32,7 @@ const routes = [
   { path: "/articles/:page", element: <Articles /> },
   { path: "/contact", element: <Contact /> },
   { path: "/search/:value", element: <SearchRsult /> },
+  { path: "/:courseName/:sessionID", element: <SessionDetails /> },
 
   {
     path: "/panel-admin/*",
