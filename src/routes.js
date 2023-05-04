@@ -44,6 +44,7 @@ const routes = [
       { path: "users", element: <Users /> },
       { path: "category", element: <AdminCategory /> },
       { path: "contacts", element: <AdminContact /> },
+      { path: "menus", element: <AdminMenu /> },
     ],
   },
 ];

@@ -7,7 +7,7 @@ export default function AdminContact() {
    const [contacts, setContacts] = useState([])
    const [emailContent, setEmailContent] = useState("")
 
-   function getAllMassages () {
+   function getAllMassages() {
       fetch('http://127.0.0.1:8000/v1/contact')
          .then(res => res.json())
          .then(info => {
@@ -48,7 +48,12 @@ export default function AdminContact() {
                Authorization: `Bearer ${localStorageData.token}`
             },
             body: JSON.stringify(answerInfo)
-         }).then(res => res.json()).
+         }).then(res => {
+            if (res.ok) {
+               return res.json()
+            }
+
+         }).
             then((result) => {
                swal({
                   title: "ایمیل با موفقیت ارسال شد",
@@ -61,16 +66,16 @@ export default function AdminContact() {
 
    }
 
-   const deleteMassage = (msgID) =>{
+   const deleteMassage = (msgID) => {
       const localStorageData = JSON.parse(localStorage.getItem('user'))
 
-      fetch(`http://127.0.0.1:8000/v1/contact/${msgID}`,{
+      fetch(`http://127.0.0.1:8000/v1/contact/${msgID}`, {
          method: "DELETE"
-      }).then(res=>{
-         if(res.ok){
+      }).then(res => {
+         if (res.ok) {
             return res.json()
          }
-      }).then(result=>{
+      }).then(result => {
          swal({
             title: "پیام با موفقیت حذف شد",
             buttons: "تائید",
@@ -99,7 +104,7 @@ export default function AdminContact() {
                   {
                      contacts.slice(0, 10).map((contact, index) => (
                         <tr key={contact._id}>
-                           <td>{index + 1}</td>
+                           <td className={`${contact.answer === 1 ? "answer-comment" : "not-answer-comment"}`} >{index + 1}</td>
                            <td>{contact.name}</td>
                            <td>{contact.email}</td>
                            <td>{contact.phone}</td>
@@ -117,7 +122,7 @@ export default function AdminContact() {
                                  type="button"
                                  className="btn btn-primary edit-btn"
                                  onClick={() => sendAnswerToUser(contact.email)}
-                                 >
+                              >
                                  پاسخ
                               </button>
                            </td>

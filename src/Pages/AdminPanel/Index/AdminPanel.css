@@ -733,7 +733,7 @@ ul {
    background-color: var(--primary-color) !important;
 }
 
-.no-answer-comment {
+.not-answer-comment {
    color: white;
    background-color: red !important;
 }

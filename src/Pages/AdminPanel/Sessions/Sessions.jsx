@@ -46,7 +46,6 @@ export default function Sessions() {
       let formData = new FormData()
       formData.append("title", formState.inputs.title.value)
       formData.append("time", formState.inputs.time.value)
-      //  formData.append("free", formState.inputs.free.value)
       formData.append("courseID", courseID)
       formData.append("video", sessionVideo)
       formData.append("free", isFree)

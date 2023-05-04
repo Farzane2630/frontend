@@ -76,6 +76,11 @@ export default function Sidebar() {
            <span>پیغام‌ها</span>
          </Link>
        </li>
+       <li>
+         <Link to="menus">
+           <span>منوها</span>
+         </Link>
+       </li>
           <li onClick={(e) => logout(e)}>
             <a href="#">
               <span>خروج</span>

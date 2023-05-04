@@ -13,7 +13,6 @@ export default function SessionDetails() {
 useEffect(()=>{
 
    const localStorageData = JSON.parse(localStorage.getItem("user"))
-   console.log(localStorageData.token);
 
    fetch(`http://127.0.0.1:8000/v1/courses/${courseName}/${sessionID}`,{
       headers : {
